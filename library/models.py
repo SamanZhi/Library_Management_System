@@ -13,7 +13,7 @@ class Book(models.Model):
         return self.title
     
 class Author(models.Model):
-    books = models.ManyToManyField(Book)
+    books = models.ManyToManyField(Book, related_name='authors')
     name = models.CharField(max_length=100)
     biography = models.TextField(blank=True)
 
