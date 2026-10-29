@@ -5,9 +5,9 @@ from library.models import Author, Book, BorrowedBook, Member
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display = ["title", "publication_date", "ISBN", "availability_status"]
-    search_fields = ["title", "ISBN"]
-    list_filter = ["availability_status"]
+    list_display = ("title", "publication_date", "ISBN", "availability_status")
+    search_fields = ("title", "ISBN")
+    list_filter = ("availability_status",)
 
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
@@ -19,4 +19,18 @@ class MemberAdmin(admin.UserAdmin):
 
 @admin.register(BorrowedBook)
 class BorrowBookAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("book_title", "member_username", "borrow_date", "due_date", "return_date")
+    search_fields = ("book__title", "member__username")
+    list_filter = ("borrow_date", "return_date")
+    list_select_related = ("book", "member")
+
+    @admin.display(description="Book Title", ordering="book__title")
+    def book_title(self, obj):
+        return obj.book.title
+
+    @admin.display(description="Member Username", ordering="member__username")
+    def member_username(self, obj):
+        if obj.member is None:
+            return "Deleted member"
+        return obj.member.username
+            
