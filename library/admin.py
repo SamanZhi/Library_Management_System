@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
 from library.models import Author, Book, BorrowedBook, Member
 
@@ -14,8 +15,31 @@ class AuthorAdmin(admin.ModelAdmin):
     pass
 
 @admin.register(Member)
-class MemberAdmin(admin.UserAdmin):
-    pass
+class MemberAdmin(UserAdmin):
+    list_display = ("username", "email", "phone_number", "is_staff")
+    fieldsets = list(UserAdmin.fieldsets)
+
+    for index, (name, options) in enumerate(fieldsets):
+        if name == "Personal info":
+            fieldsets[index] = (
+                name,
+                {
+                    **options,
+                    "fields": options["fields"] + ("phone_number",),
+                },
+            )
+            break
+    fieldsets = tuple(fieldsets)
+    add_fieldsets = (
+        (
+            UserAdmin.add_fieldsets[0][0],
+            {
+                **UserAdmin.add_fieldsets[0][1],
+                "fields": UserAdmin.add_fieldsets[0][1]["fields"]
+                + ("phone_number",),
+            },
+        ),
+    )
 
 @admin.register(BorrowedBook)
 class BorrowBookAdmin(admin.ModelAdmin):
