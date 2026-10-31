@@ -12,7 +12,12 @@ class BookAdmin(admin.ModelAdmin):
 
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
-    pass
+    @admin.display(description="Books Count")
+    def book_count(self, obj):
+        return obj.books.count()
+    list_display = ("name", "book_count")
+    search_fields = ("name",)
+    ordering = ("name",)
 
 @admin.register(Member)
 class MemberAdmin(UserAdmin):
@@ -40,6 +45,8 @@ class MemberAdmin(UserAdmin):
             },
         ),
     )
+    search_fields = ("username", "email", "phone_number")
+    list_filter = ("is_staff", "is_active")
 
 @admin.register(BorrowedBook)
 class BorrowBookAdmin(admin.ModelAdmin):
